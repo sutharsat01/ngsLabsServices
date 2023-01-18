@@ -17,19 +17,30 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 import org.apache.tomcat.util.http.fileupload.FileUtils;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+//import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.azure.core.credential.AzureKeyCredential;
 import com.azure.core.http.HttpClient;
+
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.service.ComputerVisionService;
 
 import jakarta.websocket.Decoder.Text;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 
@@ -62,10 +73,10 @@ public class OCRController {
     @Autowired
 	private ComputerVisionService service; 
     
-    @PostMapping(value = "/api/OCR",
-    		consumes= {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/api/OCR")
+    		//,consumes= {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE,})
  
-    public void postOCRResponse(@RequestPart("file") MultipartFile file) {
+    public void postOCRResponse(@RequestParam(value = "file",required = false) MultipartFile file) {
 		ocrapisubscriptionKey = service.getCredential("OCRAPI").subscriptionKey.toString();
         ocrAPIEndpoint = service.getCredential("OCRAPI").endpoint.toString();
         ocrAPIURI = ocrAPIEndpoint + "vision/v3.2/read/syncAnalyze";
@@ -96,7 +107,7 @@ public class OCRController {
         try {
 			byte[] bytearr =file.getBytes();
 			String myJSONResult = ReadTextFromStream(bytearr);
-			
+			int x = 10;
 		} catch (IOException e) {
 			
 			e.printStackTrace();
@@ -106,24 +117,51 @@ public class OCRController {
 	}
     private String ReadTextFromStream(byte[] imageByte) {
      String result ="";
-    	CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+     OkHttpClient client = new OkHttpClient().newBuilder().build();
+
+    		  
     	try {
-    		 URIBuilder uriBuilder = new URIBuilder(ocrAPIURI);
-    		 uriBuilder.setParameter("language", "en");
+    		MediaType mediaType = MediaType.parse("application/json");
+    		RequestBody body = new MultipartBody.Builder().setType(MultipartBody.FORM)
+
+    				  .addFormDataPart("","",
+
+    				    RequestBody.create(MediaType.parse("application/octet-stream"),
+                         imageByte )) .build();
+    				  
+
+    				 
+    		// URIBuilder uriBuilder = new URIBuilder(ocrAPIURI);
+    		// uriBuilder.setParameter("language", "en");
     		
     		 // Request parameters.
-             URI uri = uriBuilder.build();
-             HttpPost request = new HttpPost(uri);
-          // Request headers.
-            
-             request.setHeader("Ocp-Apim-Subscription-Key", ocrapisubscriptionKey);
-             request.setEntity(new ByteArrayEntity(imageByte));
-             HttpResponse response = httpClient.execute(request);
-             HttpEntity entity = response.getEntity();
+             //URI uri = uriBuilder.build();
+    		String requestParameters = "language=en"; //&detectOrientation=true";
+            String uri = ocrAPIURI + "?" + requestParameters;
+             Request request = new Request.Builder()
+
+            		  .url(uri)
+
+            		  .method("POST", body)
+            		  .addHeader("Ocp-Apim-Subscription-Key", ocrapisubscriptionKey)
+
+            		  .addHeader("accept", "application/json")
+
+            		  .addHeader("Content-Type", "application/json")
+
+            		  .build();
+            // HttpPost request = new HttpPost(uri);
+          
+             // Request headers.
+            // request.addHeader("Ocp-Apim-Subscription-Key", ocrapisubscriptionKey);
+           //  request.setEntity(new ByteArrayEntity(imageByte));
+            // HttpResponse response = httpClient.execute(request);
+             Response response = client.newCall(request).execute();
+             ResponseBody entity = response.body();
             // HttpResponseMessage response;
              if (entity != null) {
                  // Format and display the JSON response.
-                  result = EntityUtils.toString(entity);
+                  result = entity.toString();
                 // JSONObject json = new JSONObject(jsonString);
                  
              }
