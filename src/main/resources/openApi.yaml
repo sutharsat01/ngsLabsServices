@@ -1,0 +1,295 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/SATYAMSUTHAR/ngsLabsServices/1.0.0
+  - description: NGS Labs POC API Documentation
+    url: http://localhost:8085/ngslabservices/api
+  - description: API Specs for Proof Of Concepts developed by NGS Labs Team.
+    url: http://localhost:8085/ngslabservices/api
+info:
+  description: This is the api specs for ngsLabsServices Platform.  The platform provides all the API endpoints for POCs that the NGS Labs team has completed.
+  version: "1.0.0"
+  title: Ngs Labs Services API 
+  contact:
+    email: DL-NGS-Labs@elevancehealth.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: NLP
+    description: Endpoints available for NLP Proof Of Concept Scopes
+paths:
+  /search:
+    post:
+      tags:
+       - NLP
+      summary: Search by open search criteria and update. 
+      operationId: searchByCriteria
+      description: Search by open search criteria and update. This is a document that provides all the informatin relevant for retrieving the main identifier for document
+      responses:
+        '201':
+          description: search object created
+        '400':
+          description: 'invalid input, object invalid'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/search'
+        description: Inventory item to add
+    put:
+      tags:
+        - NLP
+      summary: Update an existing search object
+      description: Update an existing pet by Id
+      operationId: searchUpdate
+      requestBody:
+        description: Update an existing search object attributes
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/search'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/search'          
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/search'
+        '400':
+          description: Invalid ID supplied
+        '404':
+          description: Search object not found
+        '405':
+          description: Validation exception
+  /search/{id}:
+   get:
+      tags:
+       - NLP
+      summary: Search by Unique Generated Identifier 
+      operationId: searchById
+      description: Search by open search criteria and update. This is a document that provides all the informatin relevant for retrieving the main identifier for document
+      parameters: 
+        - name: id
+          in: path
+          description: ID of pet to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/search'          
+            application/xml:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/search'
+        '400':
+          description: Invalid tag value
+     
+  /extractText:
+    post:
+      tags:
+        - NLP
+      summary: Extract document content text using Azure's Vision API
+      operationId: ocr
+      description:
+        By passing in the appropriate file and pages, you can store and retrieve the text for the reuested document
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                upload:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/search'
+        '400':
+          description: bad input parameter
+  /piiEntity/{id}:
+    get:
+      tags:
+        - NLP
+      summary: searches collection for Health Entity by Id
+      operationId: piiEntity
+      description: |
+        Retrieves health entity classification based on utilizing Azure Health Model and provides response of the entity.
+      parameters: 
+        - name: id
+          in: path
+          description: ID of pet to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/health'
+        '400':
+          description: bad input parameter
+  /healthEntity/{id}:
+    get:
+      tags:
+        - NLP
+      summary: searches collection for Health Entity by Id
+      operationId: healthEntity
+      description: |
+        Retrieves health entity classification based on utilizing Azure Health Model and provides response of the entity.
+      parameters: 
+        - name: id
+          in: path
+          description: ID of pet to return
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/health'
+        '400':
+          description: bad input parameter
+components:
+  schemas:
+    search:
+      type: object
+      required:
+        - id
+        - person
+        - dateTime
+        - phoneNumber
+        - email
+        - organization
+      properties:
+        id:
+          type: string
+          format: id
+          example: 636cee42d20522fc109e4fef
+        person:
+          type: string
+          format: string
+          example: Elizabeth Lozaon
+        dateTime:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        phoneNumber:
+          type: string
+          format: string
+          example: '678-555-5555'
+        email:
+          type: string
+          format: string
+          example: 'elizabeth.lozano@elevancehealth.com'
+        organization:
+          type: string
+          format: string
+          example: 'NGS'
+        address:
+          type: string
+          format: string
+          example: 'elizabeth.lozano@elevancehealth.com'
+    extractedText:
+      type: object
+      required:
+        - id
+        - ClaimName
+        - createdDateTime
+        - lastUpdatedDateTime
+        - analyzeResult
+        - claimimage
+      properties:
+        id:
+          type: string
+          format: id
+          example: 636cee42d20522fc109e4fef
+        person:
+          type: string
+          format: string
+          example: Elizabeth Lozaon
+        createdDateTime:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        lastUpdatedDateTime:
+          type: string
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        analyzeResult:
+          type: object
+          format: object
+          example: 'analyzeResult'
+        claimimage:
+          type: string
+          format: string
+          example: 'NGS'
+    pii:
+      type: object
+      required:
+        - id
+        - correlatingId
+        - PIIEntities
+      properties:
+        id:
+          type: string
+          format: id
+          example: 6350455b5039236ffbffe0e2
+        correlatingId:
+          type: string
+          format: string
+          example: '6350455b5039236ffbffe0e2'
+        PIIEntities:
+          type: array
+          items:
+            type: object
+    health:
+      type: object
+      required:
+        - id
+        - correlatingId
+        - entities
+      properties:
+        id:
+          type: string
+          format: id
+          example: 6350455b5039236ffbffe0e2
+        correlatingId:
+          type: string
+          format: string
+          example: '6350455b5039236ffbffe0e2'
+        entities:
+          type: array
+          items:
+            type: object
