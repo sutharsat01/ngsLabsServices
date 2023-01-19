@@ -16,8 +16,6 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,13 +23,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.azure.core.credential.AzureKeyCredential;
-import com.ocr.computervision.model.Search;
 import com.ocr.computervision.service.ComputerVisionService;
 
-// Annotation
 @RestController
-
-// Class
 
 public class OCRController {
 	static String ocrapisubscriptionKey;
@@ -48,8 +42,6 @@ public class OCRController {
 
 	private AzureKeyCredential piiApiCredential;
 	private static URI healthApiEndpointURI;
-	private static URI piiApiEndpointURI;
-	private String healthApiEndpointURI2;
 	private String piiapisubscriptionKey;
 	static String piiApiEndpoint;
 
@@ -58,47 +50,17 @@ public class OCRController {
 
 	private static final String imageToAnalyze = "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png";
 
-	@PostMapping(value = "ngslabsservice/api/extractText", consumes = "multipart/*", produces = "application/json;charset=utf-8")
-	public ResponseEntity<String> postOCRResponse(@RequestParam("file") MultipartFile file) throws IOException, URISyntaxException {
+	@PostMapping(value = "/extractText", consumes = "multipart/*", produces = "application/json;charset=utf-8")
+	public ResponseEntity<String> extractText(@RequestParam("file") MultipartFile file) throws IOException, URISyntaxException {
 
 		ocrapisubscriptionKey = service.getCredential("OCRAPI").subscriptionKey.toString();
 		ocrAPIEndpoint = service.getCredential("OCRAPI").endpoint.toString();
 		ocrAPIURI = ocrAPIEndpoint + "vision/v3.2/read/syncAnalyze";
-
-		// Health Related Info Analytic API
-		healthapisubscriptionKey = service.getCredential("ANALYTICAPI").subscriptionKey.toString();
-		healthApiCredential = new AzureKeyCredential(healthapisubscriptionKey);
-		healthApiEndpoint = service.getCredential("ANALYTICAPI").endpoint.toString();
-
-		healthApiEndpointURI = new URI(healthApiEndpoint);
-
-		healthApiEndpointURI2 = healthApiEndpoint + "language/analyze-text/jobs";
-
-		// PII(Personal Info) Detection API
-		piiapisubscriptionKey = service.getCredential("PIIAPI").subscriptionKey.toString();
-		piiApiCredential = new AzureKeyCredential(piiapisubscriptionKey);
-		piiApiEndpoint = service.getCredential("PIIAPI").endpoint.toString();
-
-
 		
 		String jsonString = invokeHttpClient(imageToAnalyze, ocrAPIURI);
+		//store value in database
 		return ResponseEntity.ok(jsonString);
 	}
-
-	@PostMapping(value = "ngslabsservice/api/search", consumes = "application/json;charset=utf-8", produces = "application/json;charset=utf-8")
-	public ResponseEntity<Search> searchDocument(Search search) throws IOException, URISyntaxException {
-		return null;
-
-	}
-
-	 @GetMapping("search/{id}")
-	    public ResponseEntity<Search> getById(@PathVariable String id) {
-			return null;
-
-
-	    }
-
-
 
 	public String invokeHttpClient(String imageUrl, String clientUrl) throws URISyntaxException, ClientProtocolException, IOException {
 		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
