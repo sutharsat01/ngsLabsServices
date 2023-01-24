@@ -4,6 +4,8 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 
+
+
 public class HealthEntity {
 	@Id
 	 public String id;

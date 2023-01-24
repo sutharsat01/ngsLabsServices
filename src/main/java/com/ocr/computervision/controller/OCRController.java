@@ -19,14 +19,18 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import com.azure.ai.textanalytics.TextAnalyticsClient;
 import com.azure.ai.textanalytics.TextAnalyticsClientBuilder;
@@ -45,6 +49,8 @@ import com.ocr.computervision.model.HealthEntityResult;
 import com.ocr.computervision.model.Lines;
 import com.ocr.computervision.model.ReadResult;
 import com.ocr.computervision.ocrconstants.ocrConstants;
+
+
 import com.ocr.computervision.service.ComputerVisionService;
 
 @RestController
@@ -58,8 +64,12 @@ public class OCRController {
 	static String healthapisubscriptionKey;
 	static String endpoint;
 	static String credentialType;
+
 	private static URI healthApiEndpointURI;
 	private String healthApiEndpointURI2;
+
+
+
 	static String piiApiEndpoint;
 	private static AzureKeyCredential healthApiCredential;
 
@@ -72,16 +82,22 @@ public class OCRController {
 
 		ocrapisubscriptionKey = service.getCredential("OCRAPI").subscriptionKey.toString();
 		ocrAPIEndpoint = service.getCredential("OCRAPI").endpoint.toString();
+
 		ocrAPIURI = ocrAPIEndpoint + ocrConstants.OCR_API_URI;
 		
 		  String jsonString = "";
 		  String ocrText = "";
 		
+
+		ocrAPIURI = ocrAPIEndpoint + "vision/v3.2/read/syncAnalyze";
+		
+
 		byte[] bytes = null;
 
 		if (!file.isEmpty()) {
 			bytes = file.getBytes();
 			jsonString = invokeHttpClient(bytes, ocrAPIURI);
+
 		Claims claimResult = new Claims();
 		ObjectMapper objectMapper = new ObjectMapper();
 		claimResult = objectMapper.readValue(jsonString, Claims.class);
@@ -128,8 +144,10 @@ public class OCRController {
 	
  
  
- public String invokeHttpClient(byte[] bytes, String clientUrl)
-			throws URISyntaxException, ClientProtocolException, IOException {
+
+
+	public String invokeHttpClient(byte[] bytes, String clientUrl)
+     throws URISyntaxException, ClientProtocolException, IOException {
 		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
 		URIBuilder builder = new URIBuilder(clientUrl);
@@ -156,7 +174,10 @@ public class OCRController {
 			System.out.println("REST Response:\n");
 			System.out.println(json.toString(2));
 		}
+
 		
+
+
 		return jsonString;
 	}
 	 // Method to authenticate the client object with your key and endpoint
