@@ -8,7 +8,7 @@ public class PIIResult {
 	@Id
 	public String id;
     public String correlatingId;
-    public List<PII> PIIEntities;
+    public List<PIIEntity> PIIEntities;
 	public String getId() {
 		return id;
 	}
@@ -21,10 +21,10 @@ public class PIIResult {
 	public void setCorrelatingId(String correlatingId) {
 		this.correlatingId = correlatingId;
 	}
-	public List<PII> getPIIEntities() {
+	public List<PIIEntity> getPIIEntities() {
 		return PIIEntities;
 	}
-	public void setPIIEntities(List<PII> pIIEntities) {
+	public void setPIIEntities(List<PIIEntity> pIIEntities) {
 		PIIEntities = pIIEntities;
 	}
     

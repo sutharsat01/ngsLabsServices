@@ -3,6 +3,7 @@ package com.ocr.computervision.model;
 import java.util.List;
 
 public class Lines {
+	public Appearance appearance;
 	 public List<Integer> boundingBox;
      public List<Words> words;
      public String text;
@@ -24,4 +25,12 @@ public class Lines {
 	public void setText(String text) {
 		this.text = text;
 	}
+	public Appearance getAppearance() {
+		return appearance;
+	}
+	public void setAppearance(Appearance appearance) {
+		this.appearance = appearance;
+	}
+	
+	
 }

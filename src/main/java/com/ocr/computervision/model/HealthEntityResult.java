@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 
-public class EntityResult {
+public class HealthEntityResult {
 	@Id
 	public String id ;
     public String correlatingId;
-    public List<Entity> entities;
+    public List<HealthEntity> entities;
 	public String getId() {
 		return id;
 	}
@@ -21,10 +21,10 @@ public class EntityResult {
 	public void setCorrelatingId(String correlatingId) {
 		this.correlatingId = correlatingId;
 	}
-	public List<Entity> getEntities() {
+	public List<HealthEntity> getEntities() {
 		return entities;
 	}
-	public void setEntities(List<Entity> entities) {
+	public void setEntities(List<HealthEntity> entities) {
 		this.entities = entities;
 	}
     

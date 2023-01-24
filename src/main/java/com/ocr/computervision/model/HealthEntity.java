@@ -2,7 +2,11 @@ package com.ocr.computervision.model;
 
 import java.util.List;
 
-public class Entity {
+import org.springframework.data.annotation.Id;
+
+public class HealthEntity {
+	@Id
+	 public String id;
 	public String Text;
 
     public String Category;
@@ -42,6 +46,14 @@ public class Entity {
 
 	public void setBoundingBox(List<Integer> boundingBox) {
 		BoundingBox = boundingBox;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
     
 }

@@ -6,17 +6,18 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "Claims")
 public class Claims {
 	@Id
-	 public String id; 
+	// @GeneratedValue(generated="uuid2" )
+	// @GenericGenerator(name="uuid2", strategy="uuid2")
+	public String id;
 
-    
-    public String status;
+	public String status;
 
-    public String createdDateTime; 
+	public String createdDateTime;
 
-    public String lastUpdatedDateTime ;
-   public AnalyzeResult analyzeResult;
+	public String lastUpdatedDateTime;
+	public AnalyzeResult analyzeResult;
 
-    public byte[] claimimage ;
+	public byte[] claimimage;
 
 	public AnalyzeResult getAnalyzeResult() {
 		return analyzeResult;

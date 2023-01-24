@@ -2,7 +2,14 @@ package com.ocr.computervision.model;
 
 import java.util.List;
 
-public class PII {
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+@Document(collection = "PIIResult")
+@EntityScan
+public class PIIEntity {
+	@Id
+	 public String id;
 	public String Text;
 
     public String Category;
@@ -11,6 +18,14 @@ public class PII {
     public double ConfidenceScore;
           
     public List<Integer> BoundingBox;
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
 
 	public String getText() {
 		return Text;
