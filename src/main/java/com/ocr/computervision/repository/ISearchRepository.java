@@ -7,6 +7,6 @@ import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.Search;
 
 @Repository
-public interface ISearchRepository extends MongoRepository<Search, Long>{
+public interface ISearchRepository extends MongoRepository<Search, String>{
 
 }

@@ -12,6 +12,7 @@ import com.ocr.computervision.model.Credential;
 import com.ocr.computervision.model.HealthEntity;
 import com.ocr.computervision.model.HealthEntityResult;
 import com.ocr.computervision.model.PIIEntityResult;
+import com.ocr.computervision.model.Search;
 import com.ocr.computervision.repository.ICredentialRepository;
 import com.ocr.computervision.repository.IHealthEntityRepository;
 import com.ocr.computervision.repository.IOCRRepository;
@@ -57,6 +58,11 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 		Optional<PIIEntityResult> piiEntityResultOptional= piiEntityRepository.findById(id);
 		return piiEntityResultOptional.isPresent()?piiEntityResultOptional.get():null;
 		
+	}
+	@Override
+	public Search searchDocumentById(String id) {
+		Optional<Search> search = searchRepository.findById(id);
+		return search.isPresent()?search.get():null;
 	}
 	
 		

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -57,6 +58,7 @@ import com.ocr.computervision.model.Lines;
 import com.ocr.computervision.model.PIIEntity;
 import com.ocr.computervision.model.PIIEntityResult;
 import com.ocr.computervision.model.ReadResult;
+import com.ocr.computervision.model.Search;
 import com.ocr.computervision.ocrconstants.ocrConstants;
 import com.ocr.computervision.service.ComputerVisionService;
 
@@ -121,98 +123,25 @@ public class OCRController {
 		return ResponseEntity.ok(ocrText);
 
 	}
+	
+	//create putMapping for 
 
-	public String invokeHttpClient(byte[] bytes, String clientUrl)
-			throws URISyntaxException, ClientProtocolException, IOException {
-		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
 
-		URIBuilder builder = new URIBuilder(clientUrl);
-		String jsonString = new String();
-		// Prepare the URI for the REST API method.
-		URI uri = builder.build();
-		HttpPost request = new HttpPost(uri);
-
-		// Request headers.
-		request.setHeader("Ocp-Apim-Subscription-Key", ocrapisubscriptionKey);
-		request.setHeader("Content-type", "application/octet-stream");
-
-		// Request file bytes
-		request.setEntity(new ByteArrayEntity(bytes));
-
-		// Call the REST API method and get the response entity.
-		HttpResponse response = httpClient.execute(request);
-		HttpEntity entity = response.getEntity();
-
-		if (entity != null) {
-			// Format and display the JSON response.
-			jsonString = EntityUtils.toString(entity);
-			JSONObject json = new JSONObject(jsonString);
-			System.out.println("REST Response:\n");
-			System.out.println(json.toString(2));
-		}
-
-		return jsonString;
-	}
-
-	@PostMapping(value = "/piiEntity")
-	public ResponseEntity<String> getPIIEntityResult(@RequestBody String document) {
+	@PostMapping(value = "/classifyPiiEntity")
+	public ResponseEntity<String> getPIIEntityResult(@RequestBody String extractedText) {
 		// PII(Personal Info) Detection API
 		piiapisubscriptionKey = service.getCredential("PIIAPI").subscriptionKey.toString();
 		// piiApiCredential= new AzureKeyCredential(piiapisubscriptionKey);
 		piiApiEndpoint = service.getCredential("PIIAPI").endpoint.toString();
 
 		TextAnalyticsClient piiAPIClient = authenticatepiiClient(piiapisubscriptionKey, piiApiEndpoint);
-		String response = ExtractSavePIIRelatedInfo(piiAPIClient, document);
+		String response = ExtractSavePIIRelatedInfo(piiAPIClient, extractedText);
 
 		return ResponseEntity.ok(response);
 	}
 
-	// Method to authenticate the client object with your key and endpoint
-	private static TextAnalyticsClient authenticatepiiClient(String piiapisubscriptionKey, String piiApiEndpoint) {
-		return new TextAnalyticsClientBuilder().credential(new AzureKeyCredential(piiapisubscriptionKey))
-				.endpoint(piiApiEndpoint).buildClient();
-
-	}
-
-	private String ExtractSavePIIRelatedInfo(TextAnalyticsClient piiAPIClient, String document) {
-		String piiEntityResponse = "";
-		List<PIIEntity> resultPII = new ArrayList<PIIEntity>();
-		PIIEntityResult newPIIEntityResult = new PIIEntityResult();
-		try {
-
-			List<TextDocumentInput> td1 = Arrays.asList(new TextDocumentInput("0", document));
-			PiiEntityCollection piiEntityCollection = (piiAPIClient.recognizePiiEntities(document));
-			piiEntityCollection.forEach(entity -> System.out.printf(
-					"Recognized Personally Identifiable Information entity: %s, entity category: %s, entity subcategory: %s,"
-							+ " confidence score: %f.%n",
-					entity.getText(), entity.getCategory(), entity.getSubcategory(), entity.getConfidenceScore()));
-			for (PiiEntity piiEntity : piiEntityCollection) {
-
-				PIIEntity newEntity = new PIIEntity();
-				newEntity.setText(piiEntity.getText());
-				newEntity.setCategory(piiEntity.getCategory().toString());
-				newEntity.setConfidenceScore(piiEntity.getConfidenceScore());
-				resultPII.add(newEntity);
-			}
-			newPIIEntityResult.setPIIEntities(resultPII);
-
-			piiEntityResponse = service.savePIIEntityResult(newPIIEntityResult);
-
-		} catch (Exception e) {
-			piiEntityResponse = "Exception occured while processing healthapi" + e.getMessage();
-		}
-		return piiEntityResponse;
-	}
-
-	@GetMapping(value = "/piiEntity/{id}")
-	public ResponseEntity<PIIEntityResult> getPIIEntityById(@PathVariable String id) {
-
-		return ResponseEntity.ok().body(service.findById(id));
-
-	}
-
-	@PostMapping(value = "/healthEntity")
-	public ResponseEntity<String> getHealthEntityResult(@RequestBody String document) {
+	@PostMapping(value = "/classifyHealthEntity")
+	public ResponseEntity<String> getHealthEntityResult(@RequestBody String extractedText) {
 
 		// Health Related Info Analytic API
 		healthapisubscriptionKey = service.getCredential("ANALYTICAPI").subscriptionKey.toString();
@@ -224,8 +153,26 @@ public class OCRController {
 
 		TextAnalyticsAsyncClient healthAPIClient = authenticateClient(healthapisubscriptionKey, healthApiEndpoint);
 
-		String response = ExtractSaveHealthRelatedInfo(healthAPIClient, document);
+		String response = ExtractSaveHealthRelatedInfo(healthAPIClient, extractedText);
 		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping(value = "/piiEntity/{id}")
+	public ResponseEntity<PIIEntityResult> getPIIEntityById(@PathVariable String id) {
+		return ResponseEntity.ok().body(service.findById(id));
+	}
+	
+	@GetMapping(value = "/healthEntity/{id}")
+	public ResponseEntity<PIIEntityResult> getHealthEntity(@PathVariable String id) {
+		return ResponseEntity.ok().body(service.findById(id));
+	}
+	
+	@GetMapping("/search/{id}")
+	@ResponseBody
+	public ResponseEntity<String> searchById(@PathVariable String id) {
+		Search search = new Search();
+		search = service.searchDocumentById(id);
+		return ResponseEntity.ok(search.toString());
 	}
 
 	// Method to authenticate the client object with your key and endpoint
@@ -262,6 +209,14 @@ public class OCRController {
 		}
 		return healthEntityResponse;
 	}
+	
+	// Method to authenticate the client object with your key and endpoint
+		private static TextAnalyticsClient authenticatepiiClient(String piiapisubscriptionKey, String piiApiEndpoint) {
+			return new TextAnalyticsClientBuilder().credential(new AzureKeyCredential(piiapisubscriptionKey))
+					.endpoint(piiApiEndpoint).buildClient();
+
+		}
+
 
 	private static void processAnalyzeHealthcareEntitiesResultCollection(
 			PagedResponse<AnalyzeHealthcareEntitiesResultCollection> perPage,
@@ -286,6 +241,68 @@ public class OCRController {
 				newHealthEntityResult.setEntities(result);
 			}
 		}
+	}
+	
+	public String invokeHttpClient(byte[] bytes, String clientUrl)
+			throws URISyntaxException, ClientProtocolException, IOException {
+		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+
+		URIBuilder builder = new URIBuilder(clientUrl);
+		String jsonString = new String();
+		// Prepare the URI for the REST API method.
+		URI uri = builder.build();
+		HttpPost request = new HttpPost(uri);
+
+		// Request headers.
+		request.setHeader("Ocp-Apim-Subscription-Key", ocrapisubscriptionKey);
+		request.setHeader("Content-type", "application/octet-stream");
+
+		// Request file bytes
+		request.setEntity(new ByteArrayEntity(bytes));
+
+		// Call the REST API method and get the response entity.
+		HttpResponse response = httpClient.execute(request);
+		HttpEntity entity = response.getEntity();
+
+		if (entity != null) {
+			// Format and display the JSON response.
+			jsonString = EntityUtils.toString(entity);
+			JSONObject json = new JSONObject(jsonString);
+			System.out.println("REST Response:\n");
+			System.out.println(json.toString(2));
+		}
+
+		return jsonString;
+	}
+	
+	private String ExtractSavePIIRelatedInfo(TextAnalyticsClient piiAPIClient, String document) {
+		String piiEntityResponse = "";
+		List<PIIEntity> resultPII = new ArrayList<PIIEntity>();
+		PIIEntityResult newPIIEntityResult = new PIIEntityResult();
+		try {
+
+			List<TextDocumentInput> td1 = Arrays.asList(new TextDocumentInput("0", document));
+			PiiEntityCollection piiEntityCollection = (piiAPIClient.recognizePiiEntities(document));
+			piiEntityCollection.forEach(entity -> System.out.printf(
+					"Recognized Personally Identifiable Information entity: %s, entity category: %s, entity subcategory: %s,"
+							+ " confidence score: %f.%n",
+					entity.getText(), entity.getCategory(), entity.getSubcategory(), entity.getConfidenceScore()));
+			for (PiiEntity piiEntity : piiEntityCollection) {
+
+				PIIEntity newEntity = new PIIEntity();
+				newEntity.setText(piiEntity.getText());
+				newEntity.setCategory(piiEntity.getCategory().toString());
+				newEntity.setConfidenceScore(piiEntity.getConfidenceScore());
+				resultPII.add(newEntity);
+			}
+			newPIIEntityResult.setPIIEntities(resultPII);
+
+			piiEntityResponse = service.savePIIEntityResult(newPIIEntityResult);
+
+		} catch (Exception e) {
+			piiEntityResponse = "Exception occured while processing healthapi" + e.getMessage();
+		}
+		return piiEntityResponse;
 	}
 
 }

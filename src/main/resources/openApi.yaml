@@ -77,11 +77,10 @@ paths:
       parameters: 
         - name: id
           in: path
-          description: ID of pet to return
+          description: ID for searching
           required: true
           schema:
-            type: integer
-            format: int64
+            type: string
       responses:
         '200':
           description: successful operation
@@ -127,6 +126,62 @@ paths:
                   $ref: '#/components/schemas/search'
         '400':
           description: bad input parameter
+  /classifyHealthEntity:
+    post:
+      tags:
+        - NLP
+      summary: Takes raw text and classifies it into meaningful entities
+      operationId: classifyHealth
+      description:
+       By Passing raw paragraph of text, and choosing {Health, PII, or BOTH} as options, you can classify text into meaningful entities.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                upload:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/search'
+        '400':
+          description: bad input parameter    
+  /classifyPiiEntity:
+    post:
+      tags:
+        - NLP
+      summary: Takes raw text and classifies it into meaningful entities
+      operationId: classifyPii
+      description:
+       By Passing raw paragraph of text, and choosing {Health, PII, or BOTH} as options, you can classify text into meaningful entities.
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                upload:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/search'
+        '400':
+          description: bad input parameter    
   /piiEntity/{id}:
     get:
       tags:
@@ -235,10 +290,6 @@ components:
           type: string
           format: id
           example: 636cee42d20522fc109e4fef
-        person:
-          type: string
-          format: string
-          example: Elizabeth Lozaon
         createdDateTime:
           type: string
           format: date-time
