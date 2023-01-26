@@ -20,6 +20,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -47,6 +49,7 @@ import com.azure.core.util.Context;
 import com.azure.core.util.polling.PollerFlux;
 import com.azure.core.util.polling.SyncPoller;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.HealthEntity;
 import com.ocr.computervision.model.HealthEntityResult;
@@ -201,11 +204,13 @@ public class OCRController {
 		return piiEntityResponse;
 	}
 
-	// @GetMapping(value = "/piiEntity/{id}")
-	// private ResponseEntity<String> getPIIEntityResult(@RequestBody String
-	// document) {
+	@GetMapping(value = "/piiEntity/{id}")
+	public ResponseEntity<PIIEntityResult> getPIIEntityById(@PathVariable String id) {
 
-	// }
+		return ResponseEntity.ok().body(service.findById(id));
+
+	}
+
 	@PostMapping(value = "/healthEntity")
 	public ResponseEntity<String> getHealthEntityResult(@RequestBody String document) {
 

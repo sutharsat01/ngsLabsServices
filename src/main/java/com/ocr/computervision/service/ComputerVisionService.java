@@ -16,5 +16,5 @@ public interface ComputerVisionService {
   public String saveHealthEntityResult(HealthEntityResult healthEntityResult);
   public String savePIIEntityResult(PIIEntityResult piiEntityResult);
 	  
-  
+  PIIEntityResult findById(String id);
 }

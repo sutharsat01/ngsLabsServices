@@ -52,4 +52,14 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 		PIIEntityResult savePIIResult = piiEntityRepository.save(piiEntityResult);
 		return savePIIResult.getId();
 	}
+	@Override
+	public PIIEntityResult findById(String id) {
+		Optional<PIIEntityResult> piiEntityResultOptional= piiEntityRepository.findById(id);
+		return piiEntityResultOptional.isPresent()?piiEntityResultOptional.get():null;
+		
+	}
+	
+		
+	
+	
 }
