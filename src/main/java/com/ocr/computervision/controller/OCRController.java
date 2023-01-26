@@ -168,11 +168,10 @@ public class OCRController {
 	}
 	
 	@GetMapping("/search/{id}")
-	@ResponseBody
-	public ResponseEntity<String> searchById(@PathVariable String id) {
+	public ResponseEntity<Search> searchById(@PathVariable String id) {
 		Search search = new Search();
 		search = service.searchDocumentById(id);
-		return ResponseEntity.ok(search.toString());
+		return ResponseEntity.ok(search);
 	}
 
 	// Method to authenticate the client object with your key and endpoint
