@@ -8,6 +8,6 @@ import com.ocr.computervision.model.HealthEntityResult;
 import com.ocr.computervision.model.HealthEntity;
 
 @Repository
-public interface IHealthEntityRepository extends MongoRepository<HealthEntity, Long>{
+public interface IHealthEntityRepository extends MongoRepository<HealthEntityResult, Long>{
 
 }

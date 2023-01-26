@@ -4,14 +4,12 @@ import java.util.List;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-
-@Document(collection = "EntityResult")
-public class HealthEntityResult {
+@Document(collection = "PIIResult")
+public class PIIEntityResult {
 	@Id
-	public String id ;
+	public String id;
     public String correlatingId;
-    public List<HealthEntity> entities;
+    public List<PIIEntity> PIIEntities;
 	public String getId() {
 		return id;
 	}
@@ -24,11 +22,11 @@ public class HealthEntityResult {
 	public void setCorrelatingId(String correlatingId) {
 		this.correlatingId = correlatingId;
 	}
-	public List<HealthEntity> getEntities() {
-		return entities;
+	public List<PIIEntity> getPIIEntities() {
+		return PIIEntities;
 	}
-	public void setEntities(List<HealthEntity> entities) {
-		this.entities = entities;
+	public void setPIIEntities(List<PIIEntity> pIIEntities) {
+		PIIEntities = pIIEntities;
 	}
     
 }

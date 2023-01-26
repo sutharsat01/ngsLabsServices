@@ -9,6 +9,9 @@ import org.springframework.stereotype.Service;
 import com.azure.core.credential.AzureKeyCredential;
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.Credential;
+import com.ocr.computervision.model.HealthEntity;
+import com.ocr.computervision.model.HealthEntityResult;
+import com.ocr.computervision.model.PIIEntityResult;
 import com.ocr.computervision.repository.ICredentialRepository;
 import com.ocr.computervision.repository.IHealthEntityRepository;
 import com.ocr.computervision.repository.IOCRRepository;
@@ -21,9 +24,9 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 	@Autowired
 	private  IOCRRepository ocrRepository;
 	@Autowired
-	private  IHealthEntityRepository healthRepository;
+	private  IHealthEntityRepository healthEntityRepository;
 	@Autowired
-    private  IPIIEntityRepository piiRepository;
+    private  IPIIEntityRepository piiEntityRepository;
 	@Autowired
     private  ISearchRepository searchRepository;
 	@Autowired
@@ -38,5 +41,15 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 	public String SaveClaim(Claims claims) {
 		Claims entry = ocrRepository.save(claims);
 		return entry.getId();
+	}
+	@Override
+	public String saveHealthEntityResult(HealthEntityResult healthEntityResult) {
+		HealthEntityResult saveEntityResult = healthEntityRepository.save(healthEntityResult);
+		return saveEntityResult.getId();
+	}
+	@Override
+	public String savePIIEntityResult(PIIEntityResult piiEntityResult) {
+		PIIEntityResult savePIIResult = piiEntityRepository.save(piiEntityResult);
+		return savePIIResult.getId();
 	}
 }
