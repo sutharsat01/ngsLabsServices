@@ -7,7 +7,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Search {
 	@Id
 	public String id;
-	public byte[] Image;
 	public String person;
 	public String dateTime;
 	public String phoneNumber;
@@ -15,6 +14,7 @@ public class Search {
 	public String organization;
 	public String address;
 	public String claimId;
+	public byte[] Image;
 
 	public String getId() {
 		return id;
