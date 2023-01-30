@@ -28,5 +28,9 @@ public class PIIEntityResult {
 	public void setPIIEntities(List<PIIEntity> pIIEntities) {
 		PIIEntities = pIIEntities;
 	}
+	@Override
+	public String toString() {
+		return "PIIEntityResult [id=" + id + ", correlatingId=" + correlatingId + ", PIIEntities=" + PIIEntities + "]";
+	}
     
 }

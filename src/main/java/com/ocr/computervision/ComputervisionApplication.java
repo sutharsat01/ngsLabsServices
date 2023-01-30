@@ -7,7 +7,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 @AutoConfiguration
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = "com.ocr")
 @ComponentScan(basePackages ="com.ocr.computervision.*")
 @EntityScan("com.ocr.computervision.*")
 @EnableMongoRepositories(basePackages ="com.ocr.computervision.repository")

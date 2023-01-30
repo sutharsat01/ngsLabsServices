@@ -30,5 +30,9 @@ public class HealthEntityResult {
 	public void setEntities(List<HealthEntity> entities) {
 		this.entities = entities;
 	}
+	//@Override
+	//public String toString() {
+	//	return "HealthEntityResult [id=" + id + ", correlatingId=" + correlatingId + ", entities=" + entities + "]";
+	//}
     
 }

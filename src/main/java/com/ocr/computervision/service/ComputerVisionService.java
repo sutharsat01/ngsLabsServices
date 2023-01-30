@@ -13,7 +13,8 @@ public interface ComputerVisionService {
   
   public String SaveClaim(Claims claims); 
   public String saveHealthEntityResult(HealthEntityResult healthEntityResult);
-  public String savePIIEntityResult(PIIEntityResult piiEntityResult);
+  public PIIEntityResult savePIIEntityResult(PIIEntityResult piiEntityResult);
+  public HealthEntityResult findHealthEntityById(String id);
   public Search searchDocumentById(String id); 
   public PIIEntityResult findById(String id);
 }

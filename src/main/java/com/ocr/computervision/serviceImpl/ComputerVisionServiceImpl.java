@@ -49,21 +49,27 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 		return saveEntityResult.getId();
 	}
 	@Override
-	public String savePIIEntityResult(PIIEntityResult piiEntityResult) {
+	public PIIEntityResult savePIIEntityResult(PIIEntityResult piiEntityResult) {
 		PIIEntityResult savePIIResult = piiEntityRepository.save(piiEntityResult);
-		return savePIIResult.getId();
+		return savePIIResult;
 	}
 	@Override
 	public PIIEntityResult findById(String id) {
 		Optional<PIIEntityResult> piiEntityResultOptional= piiEntityRepository.findById(id);
 		return piiEntityResultOptional.isPresent()?piiEntityResultOptional.get():null;
-		
 	}
+		@Override
+		public HealthEntityResult findHealthEntityById(String id) {
+			Optional<HealthEntityResult> healthEntityResultOptional = healthEntityRepository.findById(id);
+			return healthEntityResultOptional.isPresent()?healthEntityResultOptional.get():null;
+		}
+	
 	@Override
 	public Search searchDocumentById(String id) {
 		Optional<Search> search = searchRepository.findById(id);
 		return search.isPresent()?search.get():null;
 	}
+	
 	
 		
 	

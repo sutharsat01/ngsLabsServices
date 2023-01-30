@@ -3,59 +3,69 @@ package com.ocr.computervision.model;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
 
-
+//@Document(collection = "EntityResult")
+@JsonAutoDetect(getterVisibility=Visibility.NONE)
 public class HealthEntity {
-	@Id
-	 public String id;
-	public String Text;
+	
+	//@Id
+	// public String id;
+	public String EntityName;
 
     public String Category;
 
    
     public double ConfidenceScore;
-   
-    public List<Integer> BoundingBox;
 
-	public String getText() {
-		return Text;
+
+	public String getEntityName() {
+		return EntityName;
 	}
 
-	public void setText(String text) {
-		Text = text;
+
+	public void setEntityName(String entityName) {
+		EntityName = entityName;
 	}
+
 
 	public String getCategory() {
 		return Category;
 	}
 
+
 	public void setCategory(String category) {
 		Category = category;
 	}
+
 
 	public double getConfidenceScore() {
 		return ConfidenceScore;
 	}
 
+
 	public void setConfidenceScore(double confidenceScore) {
 		ConfidenceScore = confidenceScore;
 	}
 
-	public List<Integer> getBoundingBox() {
-		return BoundingBox;
-	}
 
-	public void setBoundingBox(List<Integer> boundingBox) {
-		BoundingBox = boundingBox;
-	}
+	//public String getId() {
+	//	return id;
+	//}
 
-	public String getId() {
-		return id;
-	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
+	//public void setId(String id) {
+	//	this.id = id;
+	//}
+
+
+	
+   // public List<Integer> BoundingBox;
+
+	
     
 }

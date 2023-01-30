@@ -8,55 +8,63 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Document(collection = "PIIResult")
 //@EntityScan
 public class PIIEntity {
-	@Id
-	 public String id;
-	public String Text;
+	//@Id
+	// public String id;
+	public String text;
 
-    public String Category;
+    public String category;
 
   
-    public double ConfidenceScore;
-          
-    public List<Integer> BoundingBox;
+    public double confidenceScore;
 
-	public String getId() {
-		return id;
-	}
-
-	public void setId(String id) {
-		this.id = id;
-	}
 
 	public String getText() {
-		return Text;
+		return text;
 	}
+
 
 	public void setText(String text) {
-		Text = text;
+		this.text = text;
 	}
+
 
 	public String getCategory() {
-		return Category;
+		return category;
 	}
+
 
 	public void setCategory(String category) {
-		Category = category;
+		this.category = category;
 	}
+
 
 	public double getConfidenceScore() {
-		return ConfidenceScore;
+		return confidenceScore;
 	}
+
 
 	public void setConfidenceScore(double confidenceScore) {
-		ConfidenceScore = confidenceScore;
+		this.confidenceScore = confidenceScore;
 	}
+          
+    
+  //  public List<Integer> BoundingBox;
 
-	public List<Integer> getBoundingBox() {
-		return BoundingBox;
-	}
+	//public String getId() {
+	//	return id;
+//	}
 
-	public void setBoundingBox(List<Integer> boundingBox) {
-		BoundingBox = boundingBox;
-	}
+	//public void setId(String id) {
+	//	this.id = id;
+	//}
+
+	
+
+	/*
+	 * public List<Integer> getBoundingBox() { return BoundingBox; }
+	 * 
+	 * public void setBoundingBox(List<Integer> boundingBox) { BoundingBox =
+	 * boundingBox; }
+	 */
     
 }
