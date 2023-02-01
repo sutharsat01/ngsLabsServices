@@ -17,4 +17,8 @@ public interface ComputerVisionService {
   public HealthEntityResult findHealthEntityById(String id);
   public Search searchDocumentById(String id); 
   public PIIEntityResult findById(String id);
+  public String createSearch(Search search);
+  public Search updateSearch(Search search,String id );
+
+
 }

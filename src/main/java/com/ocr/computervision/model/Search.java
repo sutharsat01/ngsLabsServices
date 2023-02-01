@@ -3,7 +3,11 @@ package com.ocr.computervision.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
+
 @Document(collection = "Search")
+@JsonAutoDetect(getterVisibility=Visibility.NONE)
 public class Search {
 	@Id
 	public String id;

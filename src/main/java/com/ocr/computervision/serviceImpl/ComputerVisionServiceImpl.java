@@ -4,9 +4,11 @@ import java.net.URI;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
 import com.azure.core.credential.AzureKeyCredential;
+
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.Credential;
 import com.ocr.computervision.model.HealthEntity;
@@ -69,6 +71,25 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 		Optional<Search> search = searchRepository.findById(id);
 		return search.isPresent()?search.get():null;
 	}
+	@Override
+	public String createSearch(Search search) {
+		Search searchEntity = searchRepository.save(search);
+		return searchEntity.getId();
+	}
+
+	@Override
+	public Search updateSearch(Search search, String id) {
+		Search  updateSearchEntity = searchRepository.findById(id).orElseThrow(()-> 
+		new ResourceNotFoundException("Claim doesn't exist with the given Id " + id));
+		updateSearchEntity.setPerson(search.getPerson());
+		updateSearchEntity.setEmail(search.getEmail());
+		updateSearchEntity.setAddress(search.getAddress());
+		updateSearchEntity.setDateTime(search.getDateTime());
+	updateSearchEntity.setOrganization(search.getOrganization());
+	updateSearchEntity.setPhoneNumber(search.getPhoneNumber());
+		return searchRepository.save(updateSearchEntity) ;
+	}
+	
 	
 	
 		

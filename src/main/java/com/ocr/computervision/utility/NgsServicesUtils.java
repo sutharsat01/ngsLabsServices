@@ -42,8 +42,8 @@ import com.ocr.computervision.service.ComputerVisionService;
 @Component
 public class NgsServicesUtils {
 
-	//@Autowired
-	//private static ComputerVisionService service;
+	@Autowired
+	private  ComputerVisionService service;
 
 	public NgsServicesUtils() {
 		super();
@@ -154,7 +154,7 @@ public class NgsServicesUtils {
 		return jsonString;
 	}
 
-	public static String ExtractSavePIIRelatedInfo(TextAnalyticsClient piiAPIClient, String extractedText, ComputerVisionService service) {
+	public  String ExtractSavePIIRelatedInfo(TextAnalyticsClient piiAPIClient, String extractedText) {
 		ObjectMapper obj = new ObjectMapper();
 		
 		String piiEntityResponse = "";

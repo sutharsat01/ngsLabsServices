@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -57,8 +58,8 @@ public class OCRController extends NgsServicesUtils {
 	@Autowired
 	private ComputerVisionService service;
 
-	// @Autowired
-	// private NgsServicesUtils ngsServicesUtil;
+	 @Autowired
+	 private NgsServicesUtils ngsServicesUtil;
 
 	@Autowired
 	private static NgsServicesConstants ngsServicesConsts;
@@ -109,7 +110,7 @@ public class OCRController extends NgsServicesUtils {
 		TextAnalyticsClient piiAPIClient = NgsServicesUtils.authenticatepiiClient(piiapisubscriptionKey,
 				piiApiEndpoint);
 
-		String response = NgsServicesUtils.ExtractSavePIIRelatedInfo(piiAPIClient, extractedText, service);
+		String response = ngsServicesUtil.ExtractSavePIIRelatedInfo(piiAPIClient, extractedText);
 
 		return ResponseEntity.ok(response);
 	}
@@ -151,7 +152,16 @@ public class OCRController extends NgsServicesUtils {
 		search = service.searchDocumentById(id);
 		return ResponseEntity.ok(search);
 	}
-	//@GetMapping("/search")
 	
+	@PostMapping("/search")
+	public ResponseEntity<String> createSearch(@RequestBody Search search) {
+		return ResponseEntity.ok().body(service.createSearch(search));
+	}
+	
+	
+	@PutMapping("/search/{id}")
+	public ResponseEntity<Search> updateSearch(@PathVariable String id, @RequestBody Search search) {
+		return ResponseEntity.ok().body(service.updateSearch(search,id));
+	}
 
 }
