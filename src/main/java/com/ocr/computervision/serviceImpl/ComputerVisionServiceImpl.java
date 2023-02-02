@@ -1,17 +1,13 @@
 package com.ocr.computervision.serviceImpl;
 
-import java.net.URI;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.azure.core.credential.AzureKeyCredential;
-
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.Credential;
-import com.ocr.computervision.model.HealthEntity;
 import com.ocr.computervision.model.HealthEntityResult;
 import com.ocr.computervision.model.PIIEntityResult;
 import com.ocr.computervision.model.Search;
@@ -72,9 +68,9 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 		return search.isPresent()?search.get():null;
 	}
 	@Override
-	public String createSearch(Search search) {
+	public Search createSearch(Search search) {
 		Search searchEntity = searchRepository.save(search);
-		return searchEntity.getId();
+		return searchEntity;
 	}
 
 	@Override

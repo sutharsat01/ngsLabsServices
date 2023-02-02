@@ -3,11 +3,13 @@ package com.ocr.computervision.model;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "Claims")
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+
+@Document("Claims" )
+@JsonTypeInfo(use = JsonTypeInfo.Id.NONE)
 public class Claims {
 	@Id
-	// @GeneratedValue(generated="uuid2" )
-	// @GenericGenerator(name="uuid2", strategy="uuid2")
+	
 	public String id;
 
 	public String status;

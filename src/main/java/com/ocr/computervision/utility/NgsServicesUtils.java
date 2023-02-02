@@ -162,7 +162,7 @@ public class NgsServicesUtils {
 		PIIEntityResult newPIIEntityResult = new PIIEntityResult();
 		try {
 
-			List<TextDocumentInput> td1 = Arrays.asList(new TextDocumentInput("0", extractedText));
+			List<TextDocumentInput> textDocumentInputs = Arrays.asList(new TextDocumentInput("0", extractedText));
 			PiiEntityCollection piiEntityCollection = (piiAPIClient.recognizePiiEntities(extractedText));
 			
 			for (PiiEntity piiEntity : piiEntityCollection) {
@@ -183,5 +183,5 @@ public class NgsServicesUtils {
 		}
 		return piiEntityResponse;
 	}
-
+	
 }

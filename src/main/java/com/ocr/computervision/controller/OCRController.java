@@ -2,11 +2,7 @@ package com.ocr.computervision.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
-import org.apache.http.util.EntityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,17 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.azure.ai.textanalytics.TextAnalyticsAsyncClient;
 import com.azure.ai.textanalytics.TextAnalyticsClient;
-import com.azure.ai.textanalytics.TextAnalyticsClientBuilder;
-import com.azure.ai.textanalytics.models.PiiEntity;
-import com.azure.ai.textanalytics.models.PiiEntityCollection;
-import com.azure.ai.textanalytics.models.TextDocumentInput;
-import com.azure.core.credential.AzureKeyCredential;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.HealthEntityResult;
 import com.ocr.computervision.model.Lines;
-import com.ocr.computervision.model.PIIEntity;
 import com.ocr.computervision.model.PIIEntityResult;
 import com.ocr.computervision.model.ReadResult;
 import com.ocr.computervision.model.Search;
@@ -42,7 +31,7 @@ import com.ocr.computervision.utility.NgsServicesUtils;
 public class OCRController extends NgsServicesUtils {
 	static String ocrapisubscriptionKey;
 	static String ocrAPIEndpoint;
-	static String ocrAPIURI;
+	public static String ocrAPIURI;
 	static String healthApiURI;
 	static String healthApiEndpoint;
 	static String subscrriptionKey;
@@ -53,13 +42,13 @@ public class OCRController extends NgsServicesUtils {
 	private String piiapisubscriptionKey;
 	static String piiApiEndpoint;
 
-	private static AzureKeyCredential healthApiCredential;
+	// private static AzureKeyCredential healthApiCredential;
 
 	@Autowired
 	private ComputerVisionService service;
 
-	 @Autowired
-	 private NgsServicesUtils ngsServicesUtil;
+	@Autowired
+	private NgsServicesUtils ngsServicesUtil;
 
 	@Autowired
 	private static NgsServicesConstants ngsServicesConsts;
@@ -120,30 +109,31 @@ public class OCRController extends NgsServicesUtils {
 
 		// Health Related Info Analytic API
 		healthapisubscriptionKey = service.getCredential("ANALYTICAPI").subscriptionKey.toString();
-		healthApiCredential = new AzureKeyCredential(healthapisubscriptionKey);
+		// healthApiCredential = new AzureKeyCredential(healthapisubscriptionKey);
 		healthApiEndpoint = service.getCredential("ANALYTICAPI").endpoint.toString();
-		// healthApiEndpointURI = new Uri(healthApiEndpoint);
 
-		healthApiURI = healthApiEndpoint + "/language/analyze-text/jobs";
+		healthApiURI = healthApiEndpoint + ngsServicesConsts.HEALTH_API_ENDPOINT_URI2;
 
 		TextAnalyticsAsyncClient healthAPIClient = NgsServicesUtils.authenticateClient(healthapisubscriptionKey,
 				healthApiEndpoint);
 
 		String response = NgsServicesUtils.ExtractSaveHealthRelatedInfo(healthAPIClient, extractedText);
+		
 		return ResponseEntity.ok(response);
 	}
 
 	@GetMapping(value = "/piiEntity/{id}")
 	public ResponseEntity<PIIEntityResult> getPIIEntityById(@PathVariable String id) {
-		return ResponseEntity.ok().body(service.findById(id));
+		PIIEntityResult piiEntityResult = new PIIEntityResult();
+		piiEntityResult = service.findById(id);
+		return ResponseEntity.ok().body(piiEntityResult);
 	}
 
 	@GetMapping(value = "/healthEntity/{id}")
 	public ResponseEntity<HealthEntityResult> getHealthEntityById(@PathVariable String id) {
 		HealthEntityResult healthEntityResult = new HealthEntityResult();
-		//healthEntityResult = service.findHealthEntityById(id);
-		//return ResponseEntity.ok(healthEntityResult);
-		 return ResponseEntity.ok().body(service.findHealthEntityById(id));
+		healthEntityResult = service.findHealthEntityById(id);
+		return ResponseEntity.ok().body(healthEntityResult);
 	}
 
 	@GetMapping("/search/{id}")
@@ -152,16 +142,27 @@ public class OCRController extends NgsServicesUtils {
 		search = service.searchDocumentById(id);
 		return ResponseEntity.ok(search);
 	}
-	
+
 	@PostMapping("/search")
 	public ResponseEntity<String> createSearch(@RequestBody Search search) {
-		return ResponseEntity.ok().body(service.createSearch(search));
+		Search searchResult = new Search();
+
+		ObjectMapper obj = new ObjectMapper();
+		String searchResponse = "";
+		try {
+			searchResult = service.createSearch(search);
+			searchResponse = obj.writeValueAsString(searchResult);
+		} catch (Exception e) {
+			searchResponse = "Exception occured while saving search result" + e.getMessage();
+		}
+		return ResponseEntity.ok().body(searchResponse);
+
 	}
-	
-	
+
 	@PutMapping("/search/{id}")
 	public ResponseEntity<Search> updateSearch(@PathVariable String id, @RequestBody Search search) {
-		return ResponseEntity.ok().body(service.updateSearch(search,id));
+
+		return ResponseEntity.ok().body(service.updateSearch(search, id));
 	}
 
 }
