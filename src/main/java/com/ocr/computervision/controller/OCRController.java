@@ -16,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.azure.ai.textanalytics.TextAnalyticsAsyncClient;
 import com.azure.ai.textanalytics.TextAnalyticsClient;
+import com.ctc.wstx.shaded.msv_core.util.Uri;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.HealthEntityResult;
@@ -33,6 +34,7 @@ public class OCRController extends NgsServicesUtils {
 	static String ocrAPIEndpoint;
 	public static String ocrAPIURI;
 	static String healthApiURI;
+	static String healthApiEndpointURI;
 	static String healthApiEndpoint;
 	static String subscrriptionKey;
 	static String healthapisubscriptionKey;
@@ -111,13 +113,13 @@ public class OCRController extends NgsServicesUtils {
 		healthapisubscriptionKey = service.getCredential("ANALYTICAPI").subscriptionKey.toString();
 		// healthApiCredential = new AzureKeyCredential(healthapisubscriptionKey);
 		healthApiEndpoint = service.getCredential("ANALYTICAPI").endpoint.toString();
+		//healthApiEndpointURI = 
+		healthApiEndpointURI = healthApiEndpoint + ngsServicesConsts.HEALTH_API_ENDPOINT_URI2;
 
-		healthApiURI = healthApiEndpoint + ngsServicesConsts.HEALTH_API_ENDPOINT_URI2;
-
-		TextAnalyticsAsyncClient healthAPIClient = NgsServicesUtils.authenticateClient(healthapisubscriptionKey,
+		TextAnalyticsClient healthAPIClient = NgsServicesUtils.authenticateClient(healthapisubscriptionKey,
 				healthApiEndpoint);
 
-		String response = NgsServicesUtils.ExtractSaveHealthRelatedInfo(healthAPIClient, extractedText);
+		String response = ngsServicesUtil.ExtractSaveHealthRelatedInfo(healthAPIClient, extractedText);
 		
 		return ResponseEntity.ok(response);
 	}

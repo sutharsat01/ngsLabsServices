@@ -11,7 +11,7 @@ public interface ComputerVisionService {
   public Credential getCredential(String Key);
   
   public String SaveClaim(Claims claims); 
-  public String saveHealthEntityResult(HealthEntityResult healthEntityResult);
+  public HealthEntityResult saveHealthEntityResult(HealthEntityResult healthEntityResult);
   public PIIEntityResult savePIIEntityResult(PIIEntityResult piiEntityResult);
   public HealthEntityResult findHealthEntityById(String id);
   public Search searchDocumentById(String id); 

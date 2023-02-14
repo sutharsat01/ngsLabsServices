@@ -42,9 +42,9 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 		return entry.getId();
 	}
 	@Override
-	public String saveHealthEntityResult(HealthEntityResult healthEntityResult) {
+	public HealthEntityResult saveHealthEntityResult(HealthEntityResult healthEntityResult) {
 		HealthEntityResult saveEntityResult = healthEntityRepository.save(healthEntityResult);
-		return saveEntityResult.getId();
+		return saveEntityResult;
 	}
 	@Override
 	public PIIEntityResult savePIIEntityResult(PIIEntityResult piiEntityResult) {

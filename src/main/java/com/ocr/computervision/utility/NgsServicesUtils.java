@@ -30,9 +30,12 @@ import com.azure.ai.textanalytics.models.HealthcareEntity;
 import com.azure.ai.textanalytics.models.PiiEntity;
 import com.azure.ai.textanalytics.models.PiiEntityCollection;
 import com.azure.ai.textanalytics.models.TextDocumentInput;
+import com.azure.ai.textanalytics.util.AnalyzeHealthcareEntitiesPagedIterable;
 import com.azure.ai.textanalytics.util.AnalyzeHealthcareEntitiesResultCollection;
 import com.azure.core.credential.AzureKeyCredential;
 import com.azure.core.http.rest.PagedResponse;
+import com.azure.core.util.Context;
+import com.azure.core.util.polling.SyncPoller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocr.computervision.model.HealthEntity;
 import com.ocr.computervision.model.HealthEntityResult;
@@ -50,42 +53,51 @@ public class NgsServicesUtils {
 	}
 
 	// Method to authenticate the client object with your key and endpoint
-	protected static TextAnalyticsAsyncClient authenticateClient(String healthapisubscriptionKey, String healthApiURI) {
-		return new TextAnalyticsClientBuilder().credential(new AzureKeyCredential(healthapisubscriptionKey))
-				.endpoint(healthApiURI).buildAsyncClient();
-	}
-
-	public static String ExtractSaveHealthRelatedInfo(TextAnalyticsAsyncClient healthAPIClient, String document) {
-		String healthEntityResponse = "";
-		HealthEntityResult newHealthEntityResult = new HealthEntityResult();
-		try {
-
-			List<TextDocumentInput> td = Arrays.asList(new TextDocumentInput("0", document));
-			AnalyzeHealthcareEntitiesOptions options = new AnalyzeHealthcareEntitiesOptions()
-
-					.setIncludeStatistics(true);
-
-			healthAPIClient.beginAnalyzeHealthcareEntities(td, options).flatMap(pollResult -> {
-				AnalyzeHealthcareEntitiesOperationDetail operationResult = pollResult.getValue();
-				System.out.printf("Operation created time: %s, expiration time: %s.%n", operationResult.getCreatedAt(),
-						operationResult.getExpiresAt());
-				return pollResult.getFinalResult();
-			}).flatMap(analyzeHealthcareEntitiesPagedFlux -> analyzeHealthcareEntitiesPagedFlux.byPage()).subscribe(
-					perPage -> processAnalyzeHealthcareEntitiesResultCollection(perPage, newHealthEntityResult),
-					ex -> System.out.println("Error listing pages: " + ex.getMessage()),
-					() -> System.out.println("Successfully listed all pages"));
-
-			System.out.println("new updated entity result" + newHealthEntityResult.getEntities());
-
-			// healthEntityResponse = service.saveHealthEntityResult(newHealthEntityResult);
-		} catch (Exception e) {
-			healthEntityResponse = "Exception occured while processing healthapi" + e.getMessage();
+	protected static TextAnalyticsClient authenticateClient(String healthapisubscriptionKey, String healthApiEndpoint) {
+			return new TextAnalyticsClientBuilder().credential(new AzureKeyCredential(healthapisubscriptionKey))
+					.endpoint(healthApiEndpoint).buildClient();
 		}
-		return healthEntityResponse;
-	}
 
-	
-	
+		public String ExtractSaveHealthRelatedInfo(TextAnalyticsClient healthAPIClient, String extractedText) {
+			ObjectMapper obj = new ObjectMapper();
+			
+			String healthEntityResponse = "";
+			List<HealthEntity> result = new ArrayList<HealthEntity>();
+			HealthEntityResult newHealthEntityResult = new HealthEntityResult();
+			try {
+			List<TextDocumentInput> td = Arrays.asList(new TextDocumentInput("0", extractedText));
+			AnalyzeHealthcareEntitiesOptions options = new AnalyzeHealthcareEntitiesOptions()
+					.setIncludeStatistics(true);
+		
+			SyncPoller<AnalyzeHealthcareEntitiesOperationDetail, AnalyzeHealthcareEntitiesPagedIterable> syncPoller = healthAPIClient
+					.beginAnalyzeHealthcareEntities(td, options, Context.NONE);
+			System.out.printf("Poller status: %s.%n", syncPoller.poll().getStatus());
+			syncPoller.waitForCompletion();
+			
+			for (AnalyzeHealthcareEntitiesResultCollection resultCollection : syncPoller.getFinalResult()) {
+				
+				for (AnalyzeHealthcareEntitiesResult healthcareEntitiesResult : resultCollection) {
+					
+
+					for (HealthcareEntity entity : healthcareEntitiesResult.getEntities()) {
+						
+						HealthEntity newEntity = new HealthEntity();
+						newEntity.setEntityName(entity.getText());
+						newEntity.setCategory(entity.getCategory().toString());
+						newEntity.setConfidenceScore(entity.getConfidenceScore());
+						result.add(newEntity);
+					}
+					newHealthEntityResult.setEntities(result);
+				}
+			}
+			HealthEntityResult healthEntityResultResponse = service.saveHealthEntityResult(newHealthEntityResult);
+			//String healthEntityResultResponse = service.saveHealthEntityResult(newHealthEntityResult);
+			healthEntityResponse = obj.writeValueAsString(healthEntityResultResponse);
+			} catch (Exception e) {
+				healthEntityResponse = "Exception occured while processing healthapi" + e.getMessage();
+			}
+			return healthEntityResponse;
+		}
 	  // Method to authenticate the client object with your key and endpoint
 	  
 	protected static  TextAnalyticsClient authenticatepiiClient(String piiapisubscriptionKey, String piiApiEndpoint) { return new
@@ -97,31 +109,7 @@ public class NgsServicesUtils {
 	 
 	 
 
-	public static void processAnalyzeHealthcareEntitiesResultCollection(
-			PagedResponse<AnalyzeHealthcareEntitiesResultCollection> perPage,
-			HealthEntityResult newHealthEntityResult) {
-
-		List<HealthEntity> result = new ArrayList<HealthEntity>();
-
-		for (AnalyzeHealthcareEntitiesResultCollection resultCollection : perPage.getElements()) {
-
-			for (AnalyzeHealthcareEntitiesResult healthcareEntitiesResult : resultCollection) {
-				System.out.println("Document ID = " + healthcareEntitiesResult.getId());
-				System.out.println("Document entities: ");
-
-				for (HealthcareEntity entity : healthcareEntitiesResult.getEntities()) {
-
-					HealthEntity newEntity = new HealthEntity();
-					newEntity.setEntityName(entity.getText());
-					newEntity.setCategory(entity.getCategory().toString());
-					newEntity.setConfidenceScore(entity.getConfidenceScore());
-					result.add(newEntity);
-				}
-				newHealthEntityResult.setEntities(result);
-			}
-		}
-	}
-
+	
 	protected static String invokeHttpClient(byte[] bytes, String clientUrl, String ocrapisubscriptionKey)
 			throws URISyntaxException, ClientProtocolException, IOException {
 		CloseableHttpClient httpClient = HttpClientBuilder.create().build();
