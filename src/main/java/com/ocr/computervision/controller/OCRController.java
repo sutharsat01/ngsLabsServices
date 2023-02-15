@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -14,9 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.azure.ai.textanalytics.TextAnalyticsAsyncClient;
 import com.azure.ai.textanalytics.TextAnalyticsClient;
-import com.ctc.wstx.shaded.msv_core.util.Uri;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.HealthEntityResult;
@@ -44,7 +44,7 @@ public class OCRController extends NgsServicesUtils {
 	private String piiapisubscriptionKey;
 	static String piiApiEndpoint;
 
-	// private static AzureKeyCredential healthApiCredential;
+
 
 	@Autowired
 	private ComputerVisionService service;
@@ -93,6 +93,7 @@ public class OCRController extends NgsServicesUtils {
 
 	@PostMapping(value = "/classifyPiiEntity")
 	public ResponseEntity<String> getPIIEntityResult(@RequestBody String extractedText) {
+		HttpHeaders httpHeaders = new HttpHeaders();
 		// PII(Personal Info) Detection API
 		piiapisubscriptionKey = service.getCredential("PIIAPI").subscriptionKey.toString();
 
@@ -102,26 +103,27 @@ public class OCRController extends NgsServicesUtils {
 				piiApiEndpoint);
 
 		String response = ngsServicesUtil.ExtractSavePIIRelatedInfo(piiAPIClient, extractedText);
-
-		return ResponseEntity.ok(response);
+         
+		httpHeaders.add("Content-Type", "application/json");
+		return new ResponseEntity<> (response, httpHeaders, HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/classifyHealthEntity")
 	public ResponseEntity<String> getHealthEntityResult(@RequestBody String extractedText) {
-
+		HttpHeaders httpHeaders = new HttpHeaders();
 		// Health Related Info Analytic API
 		healthapisubscriptionKey = service.getCredential("ANALYTICAPI").subscriptionKey.toString();
-		// healthApiCredential = new AzureKeyCredential(healthapisubscriptionKey);
+		
 		healthApiEndpoint = service.getCredential("ANALYTICAPI").endpoint.toString();
-		//healthApiEndpointURI = 
+		
 		healthApiEndpointURI = healthApiEndpoint + ngsServicesConsts.HEALTH_API_ENDPOINT_URI2;
 
 		TextAnalyticsClient healthAPIClient = NgsServicesUtils.authenticateClient(healthapisubscriptionKey,
 				healthApiEndpoint);
 
 		String response = ngsServicesUtil.ExtractSaveHealthRelatedInfo(healthAPIClient, extractedText);
-		
-		return ResponseEntity.ok(response);
+		httpHeaders.add("Content-Type", "application/json");
+		return new ResponseEntity<> (response, httpHeaders, HttpStatus.OK);
 	}
 
 	@GetMapping(value = "/piiEntity/{id}")

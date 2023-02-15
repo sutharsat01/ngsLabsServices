@@ -20,7 +20,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.azure.ai.textanalytics.TextAnalyticsAsyncClient;
 import com.azure.ai.textanalytics.TextAnalyticsClient;
 import com.azure.ai.textanalytics.TextAnalyticsClientBuilder;
 import com.azure.ai.textanalytics.models.AnalyzeHealthcareEntitiesOperationDetail;
@@ -33,7 +32,6 @@ import com.azure.ai.textanalytics.models.TextDocumentInput;
 import com.azure.ai.textanalytics.util.AnalyzeHealthcareEntitiesPagedIterable;
 import com.azure.ai.textanalytics.util.AnalyzeHealthcareEntitiesResultCollection;
 import com.azure.core.credential.AzureKeyCredential;
-import com.azure.core.http.rest.PagedResponse;
 import com.azure.core.util.Context;
 import com.azure.core.util.polling.SyncPoller;
 import com.fasterxml.jackson.databind.ObjectMapper;
