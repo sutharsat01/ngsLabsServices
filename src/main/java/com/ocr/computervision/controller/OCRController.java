@@ -166,7 +166,8 @@ public class OCRController extends NgsServicesUtils {
 
 	@PutMapping("/search/{id}")
 	public ResponseEntity<Search> updateSearch(@PathVariable String id, @RequestBody Search search) {
-
+		//ResponseEntity<String> response = new ResponseEntity<String>;
+		
 		return ResponseEntity.ok().body(service.updateSearch(search, id));
 	}
 
