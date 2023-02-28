@@ -3,9 +3,10 @@ package com.ocr.computervision.serviceImpl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.rest.webmvc.ResourceNotFoundException;
+
 import org.springframework.stereotype.Service;
 
+import com.ocr.computervision.exceptions.ResourceNotFoundException;
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.Credential;
 import com.ocr.computervision.model.HealthEntityResult;
@@ -54,18 +55,21 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 	@Override
 	public PIIEntityResult findById(String id) {
 		Optional<PIIEntityResult> piiEntityResultOptional= piiEntityRepository.findById(id);
-		return piiEntityResultOptional.isPresent()?piiEntityResultOptional.get():null;
+		PIIEntityResult piiEntityResult = piiEntityResultOptional.orElseThrow(() -> new ResourceNotFoundException("PIIEntity not found with id: " + id));
+		return piiEntityResult;
 	}
 		@Override
 		public HealthEntityResult findHealthEntityById(String id) {
 			Optional<HealthEntityResult> healthEntityResultOptional = healthEntityRepository.findById(id);
-			return healthEntityResultOptional.isPresent()?healthEntityResultOptional.get():null;
+			HealthEntityResult healthEntityResult = healthEntityResultOptional.orElseThrow(() -> new ResourceNotFoundException("HealthEntity not found with id: " + id));
+			return healthEntityResult;
 		}
 	
 	@Override
 	public Search searchDocumentById(String id) {
-		Optional<Search> search = searchRepository.findById(id);
-		return search.isPresent()?search.get():null;
+		Optional<Search> searchOptional = searchRepository.findById(id);
+		Search search = searchOptional.orElseThrow(() -> new ResourceNotFoundException("Search not found with id: " + id));
+		return search;
 	}
 	@Override
 	public Search createSearch(Search search) {
