@@ -3,10 +3,10 @@ package com.ocr.computervision.serviceImpl;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.ocr.computervision.exceptions.ResourceNotFoundException;
+
 import com.ocr.computervision.model.Claims;
 import com.ocr.computervision.model.Credential;
 import com.ocr.computervision.model.HealthEntityResult;
@@ -61,7 +61,7 @@ public class ComputerVisionServiceImpl implements ComputerVisionService {
 		@Override
 		public HealthEntityResult findHealthEntityById(String id) {
 			Optional<HealthEntityResult> healthEntityResultOptional = healthEntityRepository.findById(id);
-			HealthEntityResult healthEntityResult = healthEntityResultOptional.orElseThrow(() -> new ResourceNotFoundException("HealthEntity not found with id: " + id));
+			HealthEntityResult healthEntityResult = healthEntityResultOptional.orElseThrow(() -> new ResourceNotFoundException(String.format("HealthEntity not found with id: '%s' ",  id)));
 			return healthEntityResult;
 		}
 	

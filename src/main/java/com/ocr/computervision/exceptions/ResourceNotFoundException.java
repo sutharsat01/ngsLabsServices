@@ -1,10 +1,5 @@
 package com.ocr.computervision.exceptions;
 
-import org.springframework.data.mongodb.core.messaging.Message;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ResponseStatus;
-
-
 public class ResourceNotFoundException extends RuntimeException{
 
 	private String resourceName;
